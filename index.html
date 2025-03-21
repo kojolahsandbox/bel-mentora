@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bel Online</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      button {
+        font-size: 20px;
+        padding: 10px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bel Online</h1>
+    <button id="bellButton">Tekan Bel</button>
+    <script>
+      // Konfigurasi Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyA2IFpWDD0TxBKZxI68be599iA63ABIDlo",
+        authDomain: "bel-mentora.firebaseapp.com",
+        projectId: "bel-mentora",
+        storageBucket: "bel-mentora.firebasestorage.app",
+        messagingSenderId: "1018713265713",
+        appId: "1:1018713265713:web:790049dc4541e87a1de710",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      const bellRef = db.ref("bell");
+
+      const bellButton = document.getElementById("bellButton");
+
+      bellRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.active) {
+          bellButton.disabled = true;
+          setTimeout(() => {
+            bellButton.disabled = false;
+          }, data.duration);
+        } else {
+          bellButton.disabled = false;
+        }
+      });
+
+      bellButton.addEventListener("click", () => {
+        const duration = 5000; // 5 detik
+        bellRef.set({ active: true, duration: duration });
+        setTimeout(() => {
+          bellRef.set({ active: false });
+        }, duration);
+      });
+    </script>
+  </body>
+</html>
