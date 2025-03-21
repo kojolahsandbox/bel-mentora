@@ -4,8 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bel Online</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <!-- Replace Firebase imports with the correct CDN links -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <link
+      href="https://www.kojolah.com/favicon.ico"
+      rel="icon"
+      type="image/x-icon"
+    />
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -31,6 +38,7 @@
         appId: "1:1018713265713:web:790049dc4541e87a1de710",
       };
 
+      // Initialize Firebase with compat version
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
       const bellRef = db.ref("bell");
