@@ -27,11 +27,24 @@
         background-color: #ccc;
         cursor: not-allowed;
       }
+      #usernameInput {
+        font-size: 18px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
     </style>
   </head>
   <body>
     <h1>Bel Online 🔔</h1>
-    <button id="bellButton">Tekan Bel</button>
+
+    <input type="text" id="usernameInput" placeholder="Masukkan nama Anda" />
+    <button id="saveNameButton">Simpan Nama</button>
+
+    <br /><br />
+
+    <button id="bellButton" disabled>Tekan Bel</button>
+
+    <h2 id="lastUser">Bel terakhir ditekan oleh: -</h2>
 
     <!-- Elemen audio -->
     <audio id="bellSound" src="bel.mp3"></audio>
@@ -56,20 +69,41 @@
 
       const bellButton = document.getElementById("bellButton");
       const bellSound = document.getElementById("bellSound");
+      const usernameInput = document.getElementById("usernameInput");
+      const saveNameButton = document.getElementById("saveNameButton");
+      const lastUserText = document.getElementById("lastUser");
+
+      let username = localStorage.getItem("username") || "";
+
+      // Cek apakah sudah ada nama yang disimpan
+      if (username) {
+        usernameInput.value = username;
+        bellButton.disabled = false;
+      }
+
+      saveNameButton.addEventListener("click", () => {
+        username = usernameInput.value.trim();
+        if (username) {
+          localStorage.setItem("username", username);
+          bellButton.disabled = false;
+        } else {
+          alert("Masukkan nama terlebih dahulu!");
+        }
+      });
 
       function updateButtonState(snapshot) {
         const data = snapshot.val();
         const now = Date.now();
 
         if (data && data.lockUntil && data.lockUntil > now) {
-          // Jika tombol masih terkunci
           bellButton.disabled = true;
+          lastUserText.innerText = `Bel terakhir ditekan oleh: ${data.user}`;
+
           const remainingTime = data.lockUntil - now;
           setTimeout(() => {
             bellButton.disabled = false;
           }, remainingTime);
         } else {
-          // Jika sudah waktunya aktif
           bellButton.disabled = false;
         }
       }
@@ -79,17 +113,21 @@
         updateButtonState(snapshot);
         const data = snapshot.val();
 
-        // Jika bel ditekan oleh pengguna lain, putar suara
         if (data && data.lockUntil) {
           bellSound.play();
         }
       });
 
       bellButton.addEventListener("click", () => {
+        if (!username) {
+          alert("Harap masukkan nama terlebih dahulu!");
+          return;
+        }
+
         const duration = 5000; // 5 detik
         const lockUntil = Date.now() + duration;
 
-        bellRef.set({ lockUntil: lockUntil });
+        bellRef.set({ lockUntil: lockUntil, user: username });
 
         // Putar suara bel
         bellSound.play();
